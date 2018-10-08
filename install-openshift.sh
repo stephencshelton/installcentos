@@ -74,10 +74,10 @@ yum -y install epel-release
 # Disable the EPEL repository globally so that is not accidentally used during later steps of the installation
 sed -i -e "s/^enabled=1/enabled=0/" /etc/yum.repos.d/epel.repo
 
-service | grep "NetworkManager.*running" 
+systemctl | grep "NetworkManager.*running" 
 if [ $? -eq 1 ]; then
-	service start NetworkManager
-	service enable NetworkManager
+	systemctl start NetworkManager
+	systemctl enable NetworkManager
 fi
 
 # install the packages for Ansible
@@ -103,15 +103,15 @@ else
 	echo SETUP_LVM_THIN_POOL=yes >> /etc/sysconfig/docker-storage-setup
 	echo DATA_SIZE="100%FREE" >> /etc/sysconfig/docker-storage-setup
 
-	service stop docker
+	systemctl stop docker
 
 	rm -rf /var/lib/docker
 	wipefs --all $DISK
 	docker-storage-setup
 fi
 
-service restart docker
-service enable docker
+systemctl restart docker
+systemctl enable docker
 
 if [ ! -f ~/.ssh/id_rsa ]; then
 	ssh-keygen -q -f ~/.ssh/id_rsa -N ""
